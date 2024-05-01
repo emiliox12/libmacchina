@@ -547,10 +547,22 @@ impl GeneralReadout for LinuxGeneralReadout {
         shared::disk_space(String::from("/"))
     }
 
-    fn gpus(&self) -> Result<Vec<String>, ReadoutError> {
-        let db = match Database::get_online() {
-            Ok(db) => db,
-            _ => panic!("Could not read pci.ids file"),
+    fn gpus(&self, online: bool) -> Result<Vec<String>, ReadoutError> {
+        let db = match online{
+            true => match Database::get_online() {
+                Ok(db) => db,
+                _ => {
+                    println!("Connection to online pci.ids database failed. Using local database instead.");
+                    match Database::read() {
+                        Ok(db) => db,
+                        _ => panic!("Could not read pci.ids file"),
+                    }
+                }
+            }
+            _ => match Database::read() {
+                Ok(db) => db,
+                _ => panic!("Could not read pci.ids file"),
+            }
         };
 
         let devices = get_pci_devices()?;

@@ -589,7 +589,7 @@ pub trait GeneralReadout {
     fn disk_space(&self) -> Result<(u64, u64), ReadoutError>;
 
     /// This function should return the device names of any _GPU(s)_ connected to the host machine.
-    fn gpus(&self) -> Result<Vec<String>, ReadoutError>;
+    fn gpus(&self, online: bool) -> Result<Vec<String>, ReadoutError>;
 }
 
 /// Holds the possible variants for battery status.
